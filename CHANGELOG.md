@@ -2,6 +2,18 @@
 
 ## All notable changes to this project will be documented in this file
 
+## [0.6.0] - 2026-02-15
+
+### Added
+
+- **Reputation Engine**: Flags packages with high download counts but very young age (checks for inflated trust).
+- **Velocity Check**: Detects "release spraying" by flagging packages with excessive version updates in a short window.
+- **Modern Datetime Handling**: Updated UTC logic to be compliant with Python 3.12+ (removing deprecated `utcnow`).
+
+### Fixed
+
+- **PyPI Data Flow**: Refactored `checker.py` to use a single API call per package for better performance and reliability.
+
 ## [0.5.0] - 2026-02-15
 
 ### Added

@@ -95,8 +95,8 @@ def fetch_pypi_data(package_name):
 # --- SECURITY ENGINES ---
 def check_structure(data):
     info = data.get("info", {})
-    version = info.get("version")
-    releases = data.get("releases", {}).get(version, [])
+    pkg_version = info.get("version")
+    releases = data.get("releases", {}).get(pkg_version, [])
 
     sdist_size = 0
     for release in releases:
@@ -145,8 +145,8 @@ def check_velocity(data):
         return True, {"releases": 0, "days_old": 0}
 
     upload_times = []
-    for version in releases:
-        for file_info in releases[version]:
+    for pkg_version in releases:
+        for file_info in releases[pkg_version]:
             upload_times.append(
                 datetime.fromisoformat(file_info["upload_time"].replace("Z", ""))
             )
@@ -311,6 +311,9 @@ def main():
         action="store_true",
         help="Audit the entire dependency tree",
     )
+    parser.add_argument(
+        "--max-depth", type=int, default=3, help="Maximum depth of dependency crawling"
+    )
     args = parser.parse_args()
 
     # --- 1. Priority Administrative Actions ---
@@ -353,62 +356,94 @@ def main():
     if is_squat:
         sys.exit(1)
 
-    # --- 6. Data Fetching & 7. The Forensic Suite ---
-    with console.status(f"[bold green]Auditing {package}...", spinner="dots"):
-        data = fetch_pypi_data(package)
+    # --- 6. Recursive Forensic Suite ---
+    task_queue = [(package, 0)]
+    visited = set()
+    all_results = {}  # Store results for every package: {name: results_dict}
 
-        if not data:
-            if args.json:
-                import json
+    with console.status(
+        f"[bold green]Auditing {package} and dependencies...", spinner="dots"
+    ) as status:
+        while task_queue:
+            current_pkg, current_depth = task_queue.pop(0)
 
-                print(
-                    json.dumps(
-                        {"package": package, "error": "not_found", "safety": "unknown"}
-                    )
-                )
-            else:
-                console.print(f"[yellow]❓ Could not find {package} on PyPI.[/yellow]")
-            sys.exit(0)
+            if current_pkg in visited or current_depth > args.max_depth:
+                continue
 
-        # Analysis happens while the spinner is still active
-        results = {
-            "Reputation": check_reputation(package, data),
-            "Velocity": check_velocity(data),
-            "Identity": check_identity(package, data),
-            "Structure": check_structure(data),
-            "Payload": scan_payload(package, data),
-        }
+            status.update(f"[bold green]Auditing {current_pkg}...")
+            data = fetch_pypi_data(current_pkg)
 
-    all_passed = all(status for status, meta in results.values())
+            if not data:
+                visited.add(current_pkg)
+                continue
 
+            # Run Forensics
+            all_results[current_pkg] = {
+                "Reputation": check_reputation(current_pkg, data),
+                "Velocity": check_velocity(data),
+                "Identity": check_identity(current_pkg, data),
+                "Structure": check_structure(data),
+                "Payload": scan_payload(current_pkg, data),
+            }
+
+            visited.add(current_pkg)
+
+            # If recursive flag is set, find more friends to audit
+            if args.recursive and current_depth < args.max_depth:
+                from spectr.checker_logic import get_dependencies
+
+                sub_deps = get_dependencies(data)
+                for dep in sub_deps:
+                    if dep not in visited:
+                        task_queue.append((dep, current_depth + 1))
+    all_passed = True
+    for pkg_name, pkg_results in all_results.items():
+        if not all(status for status, meta in pkg_results.values()):
+            all_passed = False
+            break
     # --- 8. JSON Export (Primary Machine Output) ---
     if args.json:
         import json
 
         output = {
-            "package": package,
+            "root_package": package,
             "version": VERSION,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "overall_safety": "safe" if all_passed else "risk",
-            "metrics": {
-                name: {"passed": p, "data": m} for name, (p, m) in results.items()
+            "tree_results": {
+                name: {
+                    h_name: {"passed": p, "data": m} for h_name, (p, m) in res.items()
+                }
+                for name, res in all_results.items()
             },
         }
         print(json.dumps(output, indent=2))
         sys.exit(0 if all_passed else 1)
 
     # --- 9. Reporting (Human-Readable) ---
-    display_report(package, results)
+    # For now, we display the report for the main package requested
+    if package in all_results:
+        display_report(package, all_results[package])
 
+        # If recursive, show a summary of the dependencies
+        if args.recursive and len(all_results) > 1:
+            console.print("\n[bold]Tree Audit Summary:[/bold]")
+            for name, results in all_results.items():
+                if name == package:
+                    continue  # Skip root, already shown
+
+                passed = all(status for status, meta in results.values())
+                status_icon = "[green]✔[/green]" if passed else "[red]✘[/red]"
+                console.print(f"  {status_icon} {name}")
     # --- 10. Final Gatekeeper Logic ---
     if not all_passed:
         console.print(
-            "\n[bold red]🛑 SECURITY RISK:[/bold red] Forensic anomalies detected."
+            "\n[bold red]🛑 SECURITY RISK:[/bold red] Forensic anomalies detected in the dependency tree."
         )
         sys.exit(1)
 
     console.print(
-        f"\n[bold green]✅ {package}[/bold green] appears established and safe."
+        f"\n[bold green]✅ {package}[/bold green] and its tree appear established and safe."
     )
     sys.exit(0)
 

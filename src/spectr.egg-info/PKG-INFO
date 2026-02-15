@@ -79,7 +79,12 @@ Command Description
 
 Spectr maintains a signed whitelist at ~/.spectr-whitelist. Unauthorized manual modifications trigger an integrity alert, preventing malware from self-whitelisting.
 
-```
+## Why Spectr?
 
-
-```
+| Feature          | `pip` / `uv`                         | Spectr (v0.16.0+)                         |
+| :--------------- | :----------------------------------- | :---------------------------------------- |
+| **Primary Goal** | Installation & Dependency Resolution | Supply-Chain Defense & Forensics          |
+| **Trust Model**  | Implicit (Trusts PyPI Registry)      | Zero-Trust (Heuristic Verification)       |
+| **Deep Scan**    | None (Resolves versions only)        | **Recursive Auditor** (Scans entire tree) |
+| **Security**     | Reactive (Scan after install)        | **Proactive** (Scan before download)      |
+| **Output**       | Progress Bars                        | Forensic Reports & Dependency Trees       |

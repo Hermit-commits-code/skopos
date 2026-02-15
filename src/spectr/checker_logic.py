@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timezone
 
 import requests
@@ -155,3 +156,35 @@ def levenshtein_distance(s1, s2):
         previous_row = current_row
 
     return previous_row[-1]
+
+
+def parse_requirement_name(req_string):
+    """
+    Extracts just the package name from a dependency string.
+    Example: 'requests (>=2.28.0) ; extra == "security"' -> 'requests'
+    """
+    if not req_string:
+        return None
+    # Match the first sequence of alphanumeric characters/hyphens/underscores
+    match = re.match(r"^([a-zA-Z0-9\-\._]+)", req_string)
+    return match.group(1) if match else None
+
+
+def get_dependencies(pypi_data):
+    """
+    Extracts a list of clean dependency names from PyPI metadata.
+    """
+    info = pypi_data.get("info", {})
+    requires = info.get("requires_dist") or []
+
+    clean_deps = []
+    for req in requires:
+        # Filter out 'extras' like [docs], [test] to avoid bloat
+        if ";" in req and "extra ==" in req:
+            continue
+
+        name = parse_requirement_name(req)
+        if name:
+            clean_deps.append(name.lower())
+
+    return list(set(clean_deps))  # Return unique names

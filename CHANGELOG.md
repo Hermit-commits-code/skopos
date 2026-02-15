@@ -5,6 +5,20 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+[0.4.0] - 2026-02-15
+
+### Added
+
+- **Typo-Squatting Detection**: Introduced a similarity engine using `difflib`.
+- **Similarity Threshold**: Established a **0.85** match requirement against a "Safe List" of popular packages.
+- **Improved CLI Logic**: Reordered `main()` execution to ensure arguments are parsed before security checks are triggered.
+  - **Similarity Threshold**: Established a **0.85** match requirement against a "Safe List" of popular packages.
+- **Improved CLI Logic**: Reordered `main()` execution to ensure arguments are parsed before security checks are triggered.
+
+### Security
+
+- Prevented potential malicious installations by blocking execution on high-similarity name matches.
+
 [0.3.0] - 2026-02-14
 
 ### Added

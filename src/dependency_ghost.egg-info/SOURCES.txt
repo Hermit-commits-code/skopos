@@ -10,3 +10,4 @@ src/ghost/__init__.py
 src/ghost/checker.py
 src/ghost/checker_logic.py
 src/ghost/interceptor.py
+src/ghost/similarity.py

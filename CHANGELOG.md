@@ -2,6 +2,26 @@
 
 ## All notable changes to this project will be documented in this file
 
+## [0.11.0] - 2026-02-15
+
+### Added
+
+- **Typosquatting Engine**: Local Levenshtein distance check for high-value targets (requests, boto3, etc.).
+- **uv Integration**: Full support for `uv` and `uvx` workflows.
+- **Management CLI**: New entry points `spectr-init` (setup) and `spectr-off` (kill-switch).
+- **Failure Reporting**: Granular feedback showing exactly which forensic check failed.
+
+### Changed
+
+- **Rebranding**: Complete transition from "Ghost" to **Spectr**.
+- **Package Structure**: Moved to a standard `src/` layout for better distribution.
+- **Security Posture**: Switched to a "Default Deny" model using `all()` validation for heuristics.
+
+### Fixed
+
+- Resolved `NameError` in CLI when running administrative flags.
+- Fixed variable scope for PyPI metadata during forensic analysis.
+
 ## [0.10.0] - 2026-02-15
 
 ### Changed

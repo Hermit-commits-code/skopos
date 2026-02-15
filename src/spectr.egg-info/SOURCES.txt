@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+src/spectr/__init__.py
+src/spectr/checker.py
+src/spectr/checker_logic.py
+src/spectr/interceptor.py
+src/spectr/similarity.py
+src/spectr.egg-info/PKG-INFO
+src/spectr.egg-info/SOURCES.txt
+src/spectr.egg-info/dependency_links.txt
+src/spectr.egg-info/entry_points.txt
+src/spectr.egg-info/requires.txt
+src/spectr.egg-info/top_level.txt
+tests/test_v060.py

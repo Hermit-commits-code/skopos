@@ -1,5 +1,6 @@
 import textwrap
 
+
 def generate_alias():
     """
     Outputs clean shell configuration to intercept package installs.
@@ -36,11 +37,12 @@ def generate_alias():
     # .strip() removes leading/trailing newlines that cause 'unexpected token' errors
     print(textwrap.dedent(hook).strip())
 
+
 def remove_alias():
-    """Outputs the shell commands to remove Ghost protection."""
-    unhook="""
+    """Outputs the shell commands to remove Spectr protection."""
+    unhook = """
         unset -f pip
         unset -f uv
-        echo "👻 Ghost protection disabled. Standard package managers restored."
+        echo "👻 Spectr protection disabled. Standard package managers restored."
     """
     print(textwrap.dedent(unhook).strip())

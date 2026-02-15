@@ -1,4 +1,0 @@
-[console_scripts]
-spectr = spectr.checker:main
-spectr-init = spectr.interceptor:generate_alias
-spectr-off = spectr.interceptor:remove_alias

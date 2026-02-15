@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "spectr-security"
-version = "0.10.0"
+name = "spectr"
+version = "0.11.0"
 description = "A proactive supply-chain defense tool for Python environments."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -19,8 +19,8 @@ dependencies=[
 # This turns your code into  a terminal command!
 # Format: command_name = "package.module:function"
 spectr = "spectr.checker:main"
-spectr-init = "spectr.interceptor:generate_alias"
-spectr-off = "spectr.interceptor:remove_alias"
+spectr-init = "spectr.checker:install_shell_hook"
+spectr-off = "spectr.checker_logic:disable_hooks"
 
 [tool.setuptools.packages.find]
 where = ["src"]

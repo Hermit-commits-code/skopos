@@ -1,0 +1,7 @@
+- id: spectr-check
+  name: spectr-check
+  description: "Runs Spectr behavioral analysis on dependencies."
+  entry: spectr check
+  language: python
+  types: [text]
+  files: ^(pyproject\.toml|requirements\.txt)$

@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 import requests
 
-from .similarity import check_for_typosquatting
+from .checker_logic import check_for_typosquatting, disable_hooks
 
 WHITELIST_FILE = os.path.expanduser("~/.spectr-whitelist")
 
@@ -21,7 +21,10 @@ def install_shell_hook():
         rc_file = os.path.expanduser("~/.bashrc")
 
     hook_cmd = (
-        "\n# Spectr Security Hook\nalias pip-install='spectr $1 && pip install $1'\n"
+        "\n# Spectr Security Hooks\n"
+        "alias pip-install='spectr $1 && pip install $1'\n"
+        "alias uv-add='spectr $1 && uv add $1'\n"
+        "alias uv-pip='spectr $1 && uv pip install $1'\n"
     )
 
     try:
@@ -250,20 +253,19 @@ def sign_whitelist():
 
 def main():
     ensure_whitelist_exists()
+    parser = argparse.ArgumentParser(description="🛡️ Spectr: Supply Chain Defense")
 
-    parser = argparse.ArgumentParser(description="Spectr: Supply Chain Defense Tool")
-    parser.add_argument("package", help="The name of the package to check")
-    parser.add_argument(
-        "--sign", action="store_true", help="Sign the whitelist after manual changes"
-    )
-    parser.add_argument(
-        "--install-hook",
-        action="store_true",
-        help="Install the pip-install shell alias",
-    )
+    parser.add_argument("package", nargs="?", help="Package to audit")
+    parser.add_argument("--sign", action="store_true", help="Sign the whitelist")
+    parser.add_argument("--install-hook", action="store_true", help="Install hooks")
+    parser.add_argument("--disable", action="store_true", help="Remove hooks")
+
     args = parser.parse_args()
 
-    print(f"👻 Spectr is haunting {args.package}...")
+    # --- 1. Priority Administrative Actions ---
+    if args.disable:
+        disable_hooks()
+        sys.exit(0)
 
     if args.install_hook:
         install_shell_hook()
@@ -273,43 +275,57 @@ def main():
         sign_whitelist()
         sys.exit(0)
 
-    if not verify_whitelist_integrity():
+    # --- 2. Validation ---
+    if not args.package:
+        parser.print_help()
         sys.exit(1)
 
-    # 1. Check Whitelist First (Express Lane)
+    # --- 3. Integrity & Whitelist (Local/Fast) ---
+    if not verify_whitelist_integrity():
+        print(
+            "❌ Integrity error. If you manually edited the whitelist, run 'spectr --sign'."
+        )
+        sys.exit(1)
+
     if is_whitelisted(args.package):
         print(f"⚪ {args.package} is whitelisted. Skipping security checks.")
         sys.exit(0)
 
-    # 2. Typosquatting Check (Local Logic)
+    # --- 4. Local Forensic Analysis ---
     if check_for_typosquatting(args.package):
-        print(f"🚨 ALERT: Suspected typosquatting for '{args.package}'.")
+        print(f"🚨 ALERT: Suspected typosquatting attempt for '{args.package}'.")
         sys.exit(1)
 
-    # 3. Fetch Remote Data Once
+    print(f"🛡️  Spectr is analyzing {args.package}...")
+
+    # --- 5. Remote Forensic Analysis (Network) ---
     data = fetch_pypi_data(args.package)
     if not data:
         print(f"❓ Could not find {args.package} on PyPI. Proceed with caution.")
         sys.exit(0)
 
-    # 4. Age Check
     if is_package_suspicious(data):
         print(f"🚨 ALERT: {args.package} is younger than 72 hours!")
         sys.exit(1)
 
-    # 5. Full Forensic Suite: Reputation, Velocity, Identity, & Structure
-    if not any(
-        [
-            check_reputation(args.package, data),
-            check_velocity(data),
-            check_identity(args.package, data),
-            check_structure(data),  # The v0.10.0 Skeleton check
-        ]
-    ):
-        print("🛑 SECURITY RISK: Behavioral or Structural anomalies detected.")
+    # --- 6. The Forensic Suite (The Gatekeeper) ---
+    # We use all() to ensure EVERY forensic check returns True (Safe).
+    # If even one returns False, the gate stays closed.
+    checks = {
+        "Reputation": check_reputation(args.package, data),
+        "Velocity": check_velocity(data),
+        "Identity": check_identity(args.package, data),
+        "Structure": check_structure(data),
+    }
+
+    if not all(checks.values()):
+        print("\n🛑 SECURITY RISK: Behavioral or Structural anomalies detected.")
+        for name, passed in checks.items():
+            if not passed:
+                print(f"   ✖ Failed: {name} check")
         sys.exit(1)
 
-    print(f"✅ {args.package} appears established and safe.")
+    print(f"\n✅ {args.package} appears established and safe.")
     sys.exit(0)
 
 

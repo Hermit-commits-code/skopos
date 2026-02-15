@@ -1,0 +1,4 @@
+[console_scripts]
+spectr = spectr.checker:main
+spectr-init = spectr.checker:install_shell_hook
+spectr-off = spectr.checker_logic:disable_hooks

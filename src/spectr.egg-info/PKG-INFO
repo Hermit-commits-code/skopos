@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
-Name: spectr-security
-Version: 0.10.0
+Name: spectr
+Version: 0.11.0
 Summary: A proactive supply-chain defense tool for Python environments.
 Author-email: Joseph Chu <hotcupofjoe2013@gmail.com>
 Requires-Python: >=3.10
@@ -25,3 +25,15 @@ Spectr is a pre-install security gatekeeper that analyzes PyPI metadata for beha
 ```bash
 spectr check <package_name>
 ```
+
+### ⚡ UV Integration
+
+Spectr works natively with `uv`.
+
+**Install hooks:**
+`spectr --install-hook`
+
+**Run via uvx (No installation required):**
+`uvx spectr check <package>`
+on required):\*\*
+`uvx spectr check <package>`

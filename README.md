@@ -1,4 +1,8 @@
 # 🛡️ Spectr
+![Version](https://img.shields.io/badge/version-0.12.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Security](https://img.shields.io/badge/forensics-enabled-red)
 
 **Proactive Supply-Chain Defense for the Modern Python Ecosystem.**
 

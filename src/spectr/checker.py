@@ -259,8 +259,8 @@ def check_for_updates(current_version):
 
 
 def main():
-    # v0.12.0 Metadata
-    VERSION = "0.12.0"
+    # v0.14.0 Metadata
+    VERSION = "0.14.0"
 
     ensure_whitelist_exists()
     parser = argparse.ArgumentParser(

@@ -2,6 +2,16 @@
 
 ## All notable changes to this project will be documented in this file
 
+## [0.9.0] - 2026-02-15
+
+### Added
+
+- **Identity Verification Engine**: New heuristic to detect "Brand-Jacking" (e.g., packages starting with 'google' or 'aws' maintained by generic gmail/outlook accounts).
+- **Consolidated Metadata Check**: Integrated identity, reputation, and velocity into a unified security validation chain.
+- **Future-Proofing**: Added CLI placeholders for `uv` backend integration.- **Identity Verification Engine**: New heuristic to detect "Brand-Jacking" (e.g., packages starting with 'google' or 'aws' maintained by generic gmail/outlook accounts).
+- **Consolidated Metadata Check**: Integrated identity, reputation, and velocity into a unified security validation chain.
+- **Future-Proofing**: Added CLI placeholders for `uv` backend integration.
+
 ## [0.8.1] - 2026-02-15
 
 ### Added

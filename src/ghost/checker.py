@@ -168,6 +168,34 @@ def check_reputation(package_name, data):
     return True
 
 
+def check_identity(package_name, data):
+    """v0.9.0: Detects if a 'branded' package is maintained by a generic email domain."""
+    info = data.get("info", {})
+    email = info.get("author_email") or info.get("maintainer_email") or ""
+    email = email.lower()
+    name = package_name.lower()
+
+    # High-target prefixes and generic domains
+    brands = ["google", "aws", "azure", "microsoft", "facebook", "meta", "apple"]
+    generic_domains = [
+        "gmail.com",
+        "yahoo.com",
+        "outlook.com",
+        "hotmail.com",
+        "protonmail.com",
+    ]
+
+    for brand in brands:
+        if name.startswith(brand):
+            # If it matches a brand but uses a generic email, flag it
+            if any(domain in email for domain in generic_domains):
+                print(
+                    f"🚨 IDENTITY MISMATCH: '{brand}' package is maintained by a generic email ({email})!"
+                )
+                return False
+    return True
+
+
 def is_package_suspicious(data):
     """v0.3.0: Basic Age Check (The 72-hour rule)."""
     releases = data.get("releases", {})
@@ -251,7 +279,12 @@ def main():
         sys.exit(1)
 
     # 5. Reputation & Velocity Checks (v0.6.0)
-    if not check_reputation(args.package, data) or not check_velocity(data):
+    if (
+        not check_reputation(args.package, data)
+        or not check_velocity(data)
+        or not check_reputation(args.package, data)
+        or not check_velocity(data)
+    ):
         print("🛑 SECURITY RISK: Metadata suggests automated trust inflation.")
         sys.exit(1)
 

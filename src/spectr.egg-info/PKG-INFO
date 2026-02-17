@@ -1,17 +1,18 @@
 Metadata-Version: 2.4
 Name: spectr
-Version: 0.14.0
+Version: 0.21.0
 Summary: A proactive supply-chain defense tool for Python environments.
 Author-email: Joseph Chu <hotcupofjoe2013@gmail.com>
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 Requires-Dist: packaging>=26.0
 Requires-Dist: requests>=2.31.0
+Requires-Dist: restrictedpython>=8.1
 Requires-Dist: rich>=14.3.2
 
 # 🛡️ Spectr
 
-![Version](https://img.shields.io/badge/version-0.13.0-blue)
+![Version](https://img.shields.io/badge/version-0.19.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![Security](https://img.shields.io/badge/forensics-enabled-red)

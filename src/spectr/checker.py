@@ -18,10 +18,11 @@ from spectr.checker_logic import (
     disable_hooks,
     scan_payload,
 )
+from spectr.sandbox import execute_in_sandbox
 
 cache = CacheManager()
 
-VERSION = "0.19.0"
+VERSION = "0.21.0"
 console = Console()
 WHITELIST_FILE = os.path.expanduser("~/.spectr-whitelist")
 
@@ -301,7 +302,7 @@ def main():
     global VERSION
     ensure_whitelist_exists()
     parser = argparse.ArgumentParser(
-        description="🛡️  Spectr: Proactive Supply-Chain Defense"
+        description="🛡️  Spectr: Proactive Supply-Chain Defense | Version 0.21.0"
     )
 
     # Flexible positionals for 'check package' or 'package'
@@ -403,22 +404,28 @@ def main():
                             task_queue.append((dep, current_depth + 1))
                 visited.add(current_pkg)
                 continue
-            # ---------------------------
+
             payload_passed, payload_meta = scan_payload(current_pkg, data)
+
+            setup_content = data.get("info", {}).get("description", "")
+            sandbox_passed, sandbox_meta = execute_in_sandbox(setup_content)
+            safe_data = data if data is not None else {}
+            safe_info = safe_data.get("info", {}) or {}
             # Run Forensics
             pkg_findings = {
-                "Reputation": check_reputation(current_pkg, data),
-                "Velocity": check_velocity(data),
+                "Reputation": check_reputation(current_pkg, safe_data),
+                "Velocity": check_velocity(safe_data),
                 "Identity": check_author_reputation(
-                    data
+                    safe_data
                 ),  # Use the new v0.20.0 logic here
-                "Structure": check_structure(data),
-                "Resurrection": check_resurrection(data),
+                "Structure": check_structure(safe_data),
+                "Resurrection": check_resurrection(safe_data),
                 "Payload": (payload_passed, payload_meta),
                 "Obfuscation": (
                     payload_meta.get("high_entropy_files") == "none",
                     payload_meta,
                 ),
+                "Sandbox": (sandbox_passed, sandbox_meta),  # New v0.21.0 heuristic
             }
             # Calculate the score for this specific package
             pkg_score = calculate_spectr_score(pkg_findings)

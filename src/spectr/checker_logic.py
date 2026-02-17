@@ -10,6 +10,7 @@ SCORING_WEIGHTS = {
     "resurrection": 40,  # High: Potential hijacking
     "payload_risk": 50,  # High: Script/Binary found in manifest
     "obfuscation": 30,  # Medium:
+    "sandbox_violation": 60,
     "new_account": 30,  # Medium: Lack of history
     "hidden_identity": 10,  # Low: Lack of transparency
     "low_velocity": 10,  # Low: Stale package
@@ -309,8 +310,9 @@ def calculate_entropy(data):
 
 def check_author_reputation(data):
     """v0.20.0: Analyzes author metadata for risk patterns."""
-    info = data.get("info", {})
-    author = info.get("author", "").strip()
+    info = data.get("info", {}) or {}
+    author_raw = info.get("author")
+    author = author_raw.strip() if author_raw else ""
     email = info.get("author_email", "").strip()
 
     # Flag missing contact info - a classic 'hidden identity' trait

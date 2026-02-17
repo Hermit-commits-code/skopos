@@ -1,9 +1,11 @@
 README.md
 pyproject.toml
 src/spectr/__init__.py
+src/spectr/cache.py
 src/spectr/checker.py
 src/spectr/checker_logic.py
 src/spectr/interceptor.py
+src/spectr/sandbox.py
 src/spectr/similarity.py
 src/spectr.egg-info/PKG-INFO
 src/spectr.egg-info/SOURCES.txt
@@ -12,4 +14,6 @@ src/spectr.egg-info/entry_points.txt
 src/spectr.egg-info/requires.txt
 src/spectr.egg-info/top_level.txt
 tests/test_forensics.py
+tests/test_sandbox.py
+tests/test_sandbox_detonation.py
 tests/test_v060.py

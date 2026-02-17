@@ -23,6 +23,9 @@ malicious payloads before they ever reach your local environment.
   - [🛡️ Trust \& Whitelisting](#️-trust--whitelisting)
   - [📂 Project Structure](#-project-structure)
   - [📊 Feature Comparison](#-feature-comparison)
+  - [🗺️ Roadmap \& Future Ideas](#️-roadmap--future-ideas)
+    - [v0.23: The Intelligence Layer](#v023-the-intelligence-layer)
+    - [v1.0: Enterprise Governance](#v10-enterprise-governance)
   - [⚖️ License](#️-license)
 
 ---
@@ -144,6 +147,21 @@ spectr/
 | Deep Scan       |                         No | Recursive Dependency Auditing |
 | False Positives |    High (on metadata gaps) |        Low (Giant's Immunity) |
 | Interception    |                       None |         Real-time Shell Hooks |
+
+## 🗺️ Roadmap & Future Ideas
+
+Spectr is evolving from a local utility into a comprehensive security framework.
+
+### v0.23: The Intelligence Layer
+
+- **Shared Threat Intelligence**: Optional opt-in to report malicious package hashes to a centralized community database.
+- **Enhanced Sandboxing**: Moving beyond `RestrictedPython` to lightweight WASM-based execution for deeper script analysis.
+
+### v1.0: Enterprise Governance
+
+- **GitOps Policy Sync**: Ability to fetch signed whitelists from a central repository for team-wide security parity.
+- **CI/CD Gating**: Dedicated GitHub Actions and GitLab CI components to block builds containing low-score dependencies.
+- **Detailed Forensic Exports**: Support for SARIF and JSON reporting for integration into SOC/SIEM platforms.- **Detailed Forensic Exports**: Support for SARIF and JSON reporting for integration into SOC/SIEM platforms.
 
 ## ⚖️ License
 

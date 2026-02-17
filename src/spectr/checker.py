@@ -325,6 +325,7 @@ def main():
     parser.add_argument(
         "--max-depth", type=int, default=3, help="Maximum depth of dependency crawling"
     )
+    parser.add_argument("--version", action="version", version=f"Spectr v{VERSION}")
     args = parser.parse_args()
 
     # --- 1. Priority Administrative Actions ---

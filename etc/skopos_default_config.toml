@@ -1,0 +1,33 @@
+# skopos default configuration
+
+[targets]
+requests = 1
+urllib3 = 1
+pip = 1
+boto3 = 1
+pandas = 1
+numpy = 1
+tensorflow = 2
+torch = 1
+django = 1
+flask = 1
+cryptography = 2
+pydantic = 1
+openai = 1
+ansible = 1
+matplotlib = 2
+scipy = 1
+selenium = 1
+pyyaml = 1
+
+# How many extra characters beyond the brand name may indicate keyword-stuffing
+keyword_extra_chars = 8
+
+[scoring_weights]
+typosquatting = 100
+payload_risk = 50
+resurrection = 40
+obfuscation = 30
+new_account = 20
+hidden_identity = 10
+low_velocity = 10

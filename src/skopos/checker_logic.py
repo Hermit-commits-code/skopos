@@ -2,10 +2,14 @@ import math
 import re
 from collections import Counter
 from datetime import datetime, timezone
+from skopos.config import load_config
+
+# Load configuration (user overrides default via ~/.skopos/config.toml)
+_CFG = load_config()
 
 # --- SCORING CONFIGURATION ---
-# v0.22: Refined weights to prioritize execution risk over metadata gaps
-SCORING_WEIGHTS = {
+# Read weights from config with a sane default fallback
+SCORING_WEIGHTS = _CFG.get("scoring_weights", {
     "typosquatting": 100,  # Critical: Immediate 0 score
     "payload_risk": 50,  # High: Suspicious binaries/scripts
     "resurrection": 40,  # Medium/High: Potential hijacked account
@@ -13,7 +17,7 @@ SCORING_WEIGHTS = {
     "new_account": 20,  # Low/Medium: Lack of history
     "hidden_identity": 10,  # Low: Missing author contact
     "low_velocity": 10,  # Low: Stale package
-}
+})
 
 # --- FORENSIC ENGINES ---
 
@@ -49,31 +53,31 @@ def levenshtein_distance(s1: str, s2: str) -> int:
 
 
 # --- HEURISTICS ---
-DEFAULT_TARGETS = {
-    "requests": 1, "urllib3": 1, "pip": 1, "boto3": 1, "pandas": 1, 
-    "numpy": 1, "tensorflow": 2, "torch": 1, "django": 1, "flask": 1, 
-    "cryptography": 2, "pydantic": 1, "openai": 1, "ansible": 1,
-    "matplotlib": 2, "scipy": 1, "selenium": 1, "pyyaml": 1
-}
 
 def check_for_typosquatting(package_name: str, custom_targets=None):
-    """v0.23.0: Detects similarity AND keyword-stuffing attacks."""
-    targets = custom_targets or DEFAULT_TARGETS
+    """Detects similarity AND keyword-stuffing attacks.
+
+    Uses targets and tuning parameters from the configuration loader by
+    default. Callers may pass `custom_targets` to override for a single run.
+    """
+    cfg = _CFG
+    targets = custom_targets or cfg.get("targets", {})
+    keyword_extra = cfg.get("keyword_extra_chars", 8)
     name = package_name.lower()
-    
+
     for target, threshold in targets.items():
-        if name == target: 
+        if name == target:
             continue
-        
+
         # 1. Levenshtein check (Similarity)
         if levenshtein_distance(name, target) <= threshold:
             return True, target
-            
+
         # 2. Keyword-stuffing check (e.g., 'requests-ultra', 'pip-security')
-        # We flag it if a high-value brand is in the name but it's not the actual package
-        if target in name and (len(name) - len(target)) <= 8:
+        # If a high-value brand is in the name but it's not the actual package
+        if target in name and (len(name) - len(target)) <= keyword_extra:
             return True, f"{target} (Keyword match)"
-            
+
     return False, None
 
 

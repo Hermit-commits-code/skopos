@@ -2,6 +2,7 @@ import argparse
 import hashlib
 import os
 import sys
+from pathlib import Path
 
 import requests
 import tomllib
@@ -216,6 +217,26 @@ def install_shell_hook():
     console.print(f"✅ Hook installed in {rc}.")
 
 
+def init_config(target_path: str | None = None):
+    """Write the default config template to the user's config path.
+
+    If `target_path` is provided, write to that path (used by tests).
+    Otherwise writes to `~/.skopos/config.toml` and creates the folder.
+    """
+    repo_root = Path(__file__).resolve().parents[2]
+    default = repo_root / "etc" / "skopos_default_config.toml"
+    user_cfg = Path(target_path) if target_path else Path.home() / ".skopos" / "config.toml"
+    user_cfg.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with open(default, "rb") as src, open(user_cfg, "wb") as dst:
+            dst.write(src.read())
+        console.print(f"✅ Config template written to {user_cfg}")
+        return True
+    except Exception as e:
+        console.print(f"❌ Failed to write config: {e}")
+        return False
+
+
 def main():
     """v0.22.0: Official Entry Point - Forensic Gatekeeper"""
 
@@ -269,8 +290,21 @@ def main():
         "--max-depth", type=int, default=2, help="Depth for recursive auditing"
     )
 
+    # Command: 'config'
+    config_p = subparsers.add_parser("config", help="Manage skopos configuration")
+    config_p.add_argument("action", choices=["init"], help="Action to perform")
+
     # 4. Parsing
     args = parser.parse_args()
+
+    # Handle config subcommand
+    if args.command == "config":
+        if getattr(args, "action", None) == "init":
+            init_config()
+            sys.exit(0)
+        else:
+            parser.print_help()
+            sys.exit(0)
 
     # 5. Execution Logic (The "Brain")
     if args.install_hook:

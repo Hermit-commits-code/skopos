@@ -1,6 +1,6 @@
 # 🛡️ Skopos
 
-![Version](https://img.shields.io/badge/version-0.22.0-blue)
+![Version](https://img.shields.io/badge/version-0.23.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 

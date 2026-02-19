@@ -183,6 +183,12 @@ payload_risk = 60
 
 If the file is missing or malformed, Skopos falls back to safe defaults so behavior does not change.
 
+## Security Caveats
+
+- **Install-time execution risk:** Some malicious packages execute code during build or installation (for example via `setup.py` or custom build backends in `pyproject.toml`). Skopos inspects metadata and performs static forensics; it does not and must not execute package build or install scripts. As a result, certain installation-time behaviors may not be detectable by static checks alone. Treat Skopos as an added safety layer — not a replacement for isolated analysis of untrusted artifacts.
+
+- **Operational advice:** Never build or install untrusted packages on your primary workstation. If you need to analyze package contents, do so in an isolated VM or container with no secrets and limited network access, and prefer static inspection (unpacking archives and scanning files) over executing any build scripts.
+
 ## Examples (Good vs Malicious)
 
 These examples show typical output from `uvx skopos check <package>` and what happens when you run `uv add <package>` with the shim installed.
@@ -198,6 +204,19 @@ $ uvx skopos check requests
 ✅ Payload:       Clean
 ------------------------------------------------------------
 ✅ SKOPOS SCORE: 95/100 (SAFE)
+```
+
+The project was previously named `spectr`; some older docs or tools may still reference that name. The same audit behavior is shown here using the legacy command (replace with `skopos` if you have the newer CLI):
+
+```bash
+$ uvx spectr check requests
+🔍 Auditing: requests
+------------------------------------------------------------
+✅ Typosquatting: PASS
+✅ Identity:      PASS (Known maintainer)
+✅ Payload:       Clean
+------------------------------------------------------------
+✅ SPECTR/SKOPOS SCORE: 95/100 (SAFE)
 ```
 
 Malicious package (example):

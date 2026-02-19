@@ -36,9 +36,15 @@ Issues = "https://github.com/Hermit-commits-code/skopos/issues"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "W", "C", "N"]
+extend-ignore = ["E203", "W503"]
+
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
     "pytest-mock>=3.15.1",
     "ruff>=0.15.1",
+    "pytest-cov>=4.1.0",
 ]

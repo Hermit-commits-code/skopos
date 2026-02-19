@@ -38,6 +38,12 @@ case "$COMMAND" in
             exit $?
         fi
 
+        # If we're in the repo root and `src/skopos` exists, add `src` to PYTHONPATH
+        if [ -d "$(pwd)/src/skopos" ]; then
+            PYTHONPATH=src python -m skopos.checker "$COMMAND" "$@"
+            exit $?
+        fi
+
         echo -e "\033[0;33m[Skopos] skopos not found; install or run from repo root.\033[0m" >&2
         exit 127
         ;;

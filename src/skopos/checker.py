@@ -372,6 +372,9 @@ def main():
     load_snyk_p.add_argument("path", help="Path to local Snyk JSON feed")
     load_snyk_p.add_argument("--target", help="Optional target config path (for testing)")
 
+    demo_snyk_p = integ_sub.add_parser("demo-snyk", help="Show offline Snyk enrichment for a package without contacting PyPI")
+    demo_snyk_p.add_argument("package", help="Package name to demo enrichment for")
+
     # 4. Parsing
     args = parser.parse_args()
 
@@ -389,6 +392,17 @@ def main():
         if getattr(args, "integ_cmd", None) == "load-snyk":
             ok = set_integration_offline_file("snyk", args.path, getattr(args, "target", None))
             sys.exit(0 if ok else 1)
+        if getattr(args, "integ_cmd", None) == "demo-snyk":
+            try:
+                snyk = SnykAdapter()
+                enrich = snyk.enrich(args.package, {})
+                if enrich:
+                    console.print(enrich)
+                else:
+                    console.print("(no enrichment found or adapter disabled)")
+            except Exception as e:
+                console.print(f"Error during demo: {e}")
+            sys.exit(0)
         else:
             parser.print_help()
             sys.exit(0)

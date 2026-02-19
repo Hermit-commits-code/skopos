@@ -1,14 +1,20 @@
 # Changelog
 
-## [0.23.0] - 2026-02-18
+## [0.23.1] - 2026-02-19
 
 ### Added
-- **Keyword-Stuffing Detection**: Typosquatting engine now detects suffix attacks (e.g., `requests-ultra`).
-- **External Configuration**: Initial abstraction of target brands for future API/Config file support.
+- **Expanded Typosquatting Targets**: Increased the default high-value package list used by the typosquatting engine.
+- **Integrations Scaffold**: Added opt-in adapters for external enrichment (Snyk and Socket) with safe, no-network defaults.
+- **Offline Snyk Enrichment**: Support for a local Snyk-style JSON feed and a CLI loader (`skopos integrations load-snyk`) to include offline vulnerability data in audits.
+- **Demo Script**: Added a repository-only demo script showing offline enrichment; intentionally excluded from sdist packages.
 
-### Removed
-- **Sandboxing**: Purged `RestrictedPython` and `sandbox.py` to eliminate arbitrary execution risks.
-- **Dependencies**: Removed `restrictedpython` from `pyproject.toml`.
+### Changed
+- **Docs**: README and integration docs updated with quick-start instructions and security caveats.
+
+### Notes
+- Adapters are disabled by default and require explicit configuration in `~/.skopos/config.toml` before any network activity.
+
+## [0.23.0] - 2026-02-18
 
 ## [0.22.1] - 2026-02-17
 

@@ -1,0 +1,8 @@
+{
+  "requests-ultra": [
+    {"id": "SNYK-EXAMPLE-1", "severity": "high", "title": "Example vuln"}
+  ],
+  "evil-package": [
+    {"id": "SNYK-EXAMPLE-2", "severity": "critical", "title": "Remote code exec in install"}
+  ]
+}

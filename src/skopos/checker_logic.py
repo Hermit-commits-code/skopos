@@ -238,6 +238,7 @@ def calculate_skopos_score(results: dict) -> int:
         "Identity": "hidden_identity",
         "Sandbox": "sandbox_violation",
         "Obfuscation": "obfuscation",
+        "Snyk": "snyk_vuln",
     }
 
     for key, weight_key in mapping.items():

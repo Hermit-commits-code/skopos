@@ -39,3 +39,14 @@ obfuscation = 30
 new_account = 20
 hidden_identity = 10
 low_velocity = 10
+snyk_vuln = 80
+
+[integrations.snyk]
+enabled = false
+api_key = ""
+offline_file = ""
+
+[integrations.socket]
+enabled = false
+endpoint = ""
+offline_file = ""

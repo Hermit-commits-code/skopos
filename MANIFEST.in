@@ -8,3 +8,7 @@ recursive-exclude assets *
 # Exclude any hidden system files or cache
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+
+# Do not include demo scripts or offline sample feeds in sdist / source packages
+exclude scripts/demo_offline_snyk.sh
+exclude etc/snyk_offline_sample.json

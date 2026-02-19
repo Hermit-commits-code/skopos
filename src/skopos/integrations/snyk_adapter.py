@@ -18,8 +18,28 @@ class SnykAdapter:
         return bool(self.enabled and self.api_key)
 
     def enrich(self, package_name: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
-        # Placeholder: return empty enrichment to avoid network calls when disabled
+        # No-op when disabled
         if not self.is_enabled():
             return {}
-        # Real network calls would go here (not implemented in scaffold)
-        return {"snyk": {"vulnerabilities": []}}
+
+        # Offline mode: read a local JSON file mapping package -> vulnerabilities
+        offline_path = self.api_key if False else self.__class__._offline_file(self)
+        if offline_path:
+            try:
+                import json
+
+                with open(offline_path, "r") as f:
+                    feed = json.load(f)
+                vulns = feed.get(package_name, [])
+                return {"vulnerabilities": vulns}
+            except Exception:
+                return {}
+
+        # Networked Snyk integration would go here; not implemented in scaffold.
+        return {"vulnerabilities": []}
+
+    @staticmethod
+    def _offline_file(self) -> str:
+        # Helper to fetch configured offline file path
+        cfg = load_config()
+        return cfg.get("integrations", {}).get("snyk", {}).get("offline_file", "")

@@ -43,7 +43,12 @@ low_velocity = 10
 [integrations.snyk]
 enabled = false
 api_key = ""
+offline_file = ""
 
 [integrations.socket]
 enabled = false
 endpoint = ""
+offline_file = ""
+
+[scoring_weights]
+snyk_vuln = 80

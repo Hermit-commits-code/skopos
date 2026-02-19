@@ -45,8 +45,12 @@ DEFAULTS: Dict[str, Any] = {
         "low_velocity": 10,
     },
     "integrations": {
-        "snyk": {"enabled": False, "api_key": ""},
-        "socket": {"enabled": False, "endpoint": ""},
+        "snyk": {"enabled": False, "api_key": "", "offline_file": ""},
+        "socket": {"enabled": False, "endpoint": "", "offline_file": ""},
+    },
+    # Scoring adjustments for enrichment sources
+    "scoring_weights": {
+        # kept in DEFAULTS above; placeholder to ensure merge behavior
     },
 }
 

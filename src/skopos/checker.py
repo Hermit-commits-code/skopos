@@ -22,6 +22,8 @@ from skopos.checker_logic import (
     check_for_updates,
     check_identity
 )
+from skopos.integrations.snyk_adapter import SnykAdapter
+from skopos.integrations.socket_adapter import SocketAdapter
 
 # --- CONFIGURATION ---
 VERSION = "0.22.0"
@@ -135,6 +137,25 @@ def check_package(package, args, depth=0):
         "Resurrection": check_resurrection(data),
         "Payload": (payload_passed, payload_meta),
     }
+
+    # Integrations: enrichment (opt-in, offline-first)
+    try:
+        snyk = SnykAdapter()
+        snyk_enrich = snyk.enrich(package, data)
+        if snyk_enrich:
+            vulns = snyk_enrich.get("vulnerabilities", [])
+            findings["Snyk"] = (len(vulns) == 0, vulns)
+    except Exception:
+        # Do not fail audit on integration errors
+        pass
+
+    try:
+        socket = SocketAdapter()
+        socket_enrich = socket.enrich(package, data)
+        if socket_enrich:
+            findings["Socket"] = (True, socket_enrich)
+    except Exception:
+        pass
 
     score = calculate_skopos_score(findings)
     cache.save_audit(package, info.get("version", "0.0.0"), score, findings)

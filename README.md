@@ -257,3 +257,25 @@ Both approaches are conservative and will skip blocking behavior if the `skopos`
 ---
 
 If you want, I can also add annotated screenshots or richer example logs for CI usage and a short section describing how to tune thresholds for your organization.
+
+## Offline Snyk enrichment (quick start)
+
+Skopos can include offline Snyk-like vulnerability feeds as optional enrichment. This is useful for air-gapped environments or when you want a deterministic, local vulnerability dataset.
+
+1. Put a Snyk-style JSON feed on disk (example: `etc/snyk_offline_sample.json`).
+2. Register the feed with Skopos:
+
+```bash
+# Writes the path into ~/.skopos/config.toml under [integrations.snyk]
+skopos integrations load-snyk /full/path/to/snyk_offline.json
+```
+
+3. Enable the adapter in your `~/.skopos/config.toml`:
+
+```toml
+[integrations.snyk]
+enabled = true
+offline_file = "/full/path/to/snyk_offline.json"
+```
+
+When enabled, Snyk findings from the offline feed will be included in reports and factored into scoring (weight: `snyk_vuln`). The loader only edits your configuration file and performs no network activity.

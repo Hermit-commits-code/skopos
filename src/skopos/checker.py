@@ -24,6 +24,7 @@ from skopos.checker_logic import (
 )
 from skopos.integrations.snyk_adapter import SnykAdapter
 from skopos.integrations.socket_adapter import SocketAdapter
+import re
 
 # --- CONFIGURATION ---
 VERSION = "0.22.0"
@@ -258,6 +259,54 @@ def init_config(target_path: str | None = None):
         return False
 
 
+def set_integration_offline_file(provider: str, offline_path: str, target_path: str | None = None) -> bool:
+    """Set `integrations.<provider>.offline_file` in the user's config.toml.
+
+    - Creates a default config if none exists.
+    - Replaces existing `offline_file` if present under the provider section.
+    - Appends a provider section if missing.
+    Returns True on success.
+    """
+    user_cfg = Path(target_path) if target_path else Path.home() / ".skopos" / "config.toml"
+    user_cfg.parent.mkdir(parents=True, exist_ok=True)
+    if not user_cfg.exists():
+        if not init_config(target_path=str(user_cfg)):
+            return False
+
+    text = user_cfg.read_text()
+    section = f"[integrations.{provider}]"
+    line = f'offline_file = "{offline_path}"'
+    if section in text:
+        start = text.index(section)
+        # find end of this section (start of next '[' after this section)
+        next_sec = text.find('\n[', start + len(section))
+        if next_sec == -1:
+            block = text[start:]
+            rest = ''
+        else:
+            block = text[start:next_sec]
+            rest = text[next_sec:]
+
+        if 'offline_file' in block:
+            block = re.sub(r'offline_file\s*=\s*".*"', line, block)
+        else:
+            # append offline_file to section
+            block = block.rstrip() + '\n' + line + '\n'
+
+        new_text = text[:start] + block + rest
+    else:
+        # Add a new section at the end
+        new_text = text.rstrip() + f"\n{section}\nenabled = false\napi_key = \"\"\noffline_file = \"{offline_path}\"\n"
+
+    try:
+        user_cfg.write_text(new_text)
+        console.print(f"✅ Set {provider} offline feed to: {offline_path}")
+        return True
+    except Exception as e:
+        console.print(f"❌ Failed to write config: {e}")
+        return False
+
+
 def main():
     """v0.22.0: Official Entry Point - Forensic Gatekeeper"""
 
@@ -315,6 +364,14 @@ def main():
     config_p = subparsers.add_parser("config", help="Manage skopos configuration")
     config_p.add_argument("action", choices=["init"], help="Action to perform")
 
+    # Command: 'integrations' (load offline feeds, etc.)
+    integrations_p = subparsers.add_parser("integrations", help="Manage integrations and offline feeds")
+    integ_sub = integrations_p.add_subparsers(dest="integ_cmd", help="Integration commands")
+
+    load_snyk_p = integ_sub.add_parser("load-snyk", help="Register a local Snyk offline JSON feed and write to config")
+    load_snyk_p.add_argument("path", help="Path to local Snyk JSON feed")
+    load_snyk_p.add_argument("--target", help="Optional target config path (for testing)")
+
     # 4. Parsing
     args = parser.parse_args()
 
@@ -323,6 +380,15 @@ def main():
         if getattr(args, "action", None) == "init":
             init_config()
             sys.exit(0)
+        else:
+            parser.print_help()
+            sys.exit(0)
+
+    # Handle integrations subcommands
+    if args.command == "integrations":
+        if getattr(args, "integ_cmd", None) == "load-snyk":
+            ok = set_integration_offline_file("snyk", args.path, getattr(args, "target", None))
+            sys.exit(0 if ok else 1)
         else:
             parser.print_help()
             sys.exit(0)

@@ -43,15 +43,13 @@ DEFAULTS: Dict[str, Any] = {
         "new_account": 20,
         "hidden_identity": 10,
         "low_velocity": 10,
+        "snyk_vuln": 80,
     },
     "integrations": {
         "snyk": {"enabled": False, "api_key": "", "offline_file": ""},
         "socket": {"enabled": False, "endpoint": "", "offline_file": ""},
     },
-    # Scoring adjustments for enrichment sources
-    "scoring_weights": {
-        # kept in DEFAULTS above; placeholder to ensure merge behavior
-    },
+    # Scoring adjustments for enrichment sources are included above
 }
 
 

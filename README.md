@@ -150,7 +150,7 @@ Example Output (Malicious Package):
 
 ## Performance
 
-Is it slow? No. Version 0.23.0 removed the heavy `RestrictedPython` sandbox. Skopos now performs "Static Metadata Forensics."
+Is it slow? No — in v0.25.0 we removed the heavy `RestrictedPython` sandbox. Skopos now performs "Static Metadata Forensics."
 
 - **Speed:** Checks usually take < 500ms.
 - **Safety:** We never execute the code we are auditing. We analyze the "fingerprints" left on PyPI.

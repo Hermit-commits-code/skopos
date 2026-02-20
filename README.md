@@ -1,7 +1,10 @@
+![coverage](docs/coverage-badge.svg)
 [![PyPI version](https://img.shields.io/pypi/v/skopos-audit.svg)](https://pypi.org/project/skopos-audit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-# 🛡️ Skopos (v0.23.0)
+> Note: This repository received assistance from generative AI tools for refactoring, tests, and documentation. All AI-assisted changes were reviewed and approved by a human maintainer — see `docs/policies/AI_POLICY.md` for details.
+
+# 🛡️ Skopos (v0.25.0)
 
 ## Overview
 
@@ -21,6 +24,7 @@ Skopos (Greek for "watcher/lookout") is a high-speed forensic audit tool designe
 - [Performance](#performance)
 - [Forensic Heuristics](#forensic-heuristics)
 - [License](#license)
+- [Contributing](docs/CONTRIBUTING.md)
 
 ## Why Skopos?
 
@@ -90,11 +94,24 @@ uvx --refresh skopos
 
 If you still want to isolate the CLI into a virtual environment (recommended for development), create and activate one first and then install into it via `pip install -e .`.
 
-Reload your shell and verify the CLI is available:
+Example (recommended development workflow):
 
 ```bash
-source ~/.bashrc || source ~/.zshrc
+# create and activate a venv
+python3 -m venv .venv
+source .venv/bin/activate
+
+# install the project in editable mode
+pip install -e .
+
+# verify the CLI is available
 which skopos || skopos --version
+```
+
+If you prefer not to install, run the shim from the repository root (this sets `PYTHONPATH` to `src/`):
+
+```bash
+PYTHONPATH="$PWD/src" ./scripts/skopos-uv.sh add <package>
 ```
 
 ## Automatic Bouncer (Shim)

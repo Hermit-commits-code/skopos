@@ -332,6 +332,11 @@ def main():
     parser.add_argument(
         "--disable", action="store_true", help="Disable and remove shell hooks"
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Enforce blocking mode: return non-zero exit code when audits fail (useful for CI)",
+    )
 
     # 3. Setup Subcommands (check, audit)
     subparsers = parser.add_subparsers(dest="command", help="Skopos Forensic Commands")
@@ -418,7 +423,10 @@ def main():
 
     if args.command == "check":
         # Pass the package and the args namespace to the engine
-        check_package(args.package, args)
+        passed, score = check_package(args.package, args)
+        if getattr(args, "strict", False) and not passed:
+            # In strict mode we exit non-zero so shims/CI can fail fast
+            sys.exit(2)
     elif args.command == "audit":
         # Pass the args namespace to the project auditor
         audit_project(args)

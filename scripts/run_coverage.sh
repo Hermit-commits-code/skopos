@@ -16,8 +16,9 @@ VENV=".venv_test"
 "$PY" -m venv "$VENV"
 . "$VENV/bin/activate"
 "$PY" -m pip install --upgrade pip
-pip install -e .[dev]
-pip install pytest-cov
+# Install the project editable and required test tooling into the venv
+"$PY" -m pip install -e .
+"$PY" -m pip install build pytest-mock pytest-cov
 
 # Run pytest with coverage
 pytest --cov=skopos --cov-report=term-missing --cov-report=xml:coverage.xml -q

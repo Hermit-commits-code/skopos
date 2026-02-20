@@ -34,3 +34,4 @@ htmlcov/
 *.db
 .python-version
 .venv_test/
+.venv_release_test/

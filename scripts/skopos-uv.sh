@@ -53,6 +53,9 @@ case "$COMMAND" in
         fi
 
         echo -e "\033[0;33m[Skopos] skopos not found; install or run from repo root.\033[0m" >&2
+        echo -e "\033[0;36mHint: install the CLI (recommended) or run the shim from the repository:\033[0m" >&2
+        echo -e "  pip install -e .    # inside a venv" >&2
+        echo -e "  PYTHONPATH=\"$REPOROOT/src\" ./scripts/skopos-uv.sh add <package>    # run from repo root" >&2
         exit 127
         ;;
     *)
